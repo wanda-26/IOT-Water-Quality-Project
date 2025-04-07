@@ -1,0 +1,35 @@
+PH sensor:
+
+Connections:
+Common GND the circuit with GND Pin of ESP32.
+Connect the GND pin of 9v DC battery to common GND.(NOT SURE IF IT WORKS THAT WAY I HAVE ONLY TRIED WITH ROOM 117 POWER SUPPLY)
+Connect + of O/P pin to pin 36 of ESP32.
+Connect - of O/P pin to GND.
+Connect 9V+ pin to 9V DC battery pin.
+COnnect 9V- pin to common GND.
+
+Code:
+const int potPin=36;
+float ph;
+float Value=0;
+ 
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(potPin,INPUT);
+  delay(1000);
+}
+ void loop(){
+ 
+    Value= analogRead(potPin);
+    Serial.print(Value);
+    Serial.print(" | ");
+    float voltage=Value*(3.3/4095.0);
+    ph=(3.3*voltage);
+    Serial.println(ph);
+    delay(1000);
+ }
+ 
+ Calibration-
+ NOT DONE YET.
+ 
