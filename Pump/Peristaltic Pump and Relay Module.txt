@@ -1,0 +1,70 @@
+----------------------------------
+Peristaltic Pump and Relay Module
+----------------------------------
+
+*****
+Code:
+*****
+#define RELAY_PIN 5  // D5 on ESP32
+void setup() {
+ pinMode(RELAY_PIN, OUTPUT);
+ digitalWrite(RELAY_PIN, HIGH); // Start with relay OFF (active LOW)
+}
+void loop() {
+ // Turn relay ON → pump ON
+ digitalWrite(RELAY_PIN, LOW);
+ Serial.println("Pump ON");
+ delay(2000);  // 2 seconds ON
+ // Turn relay OFF → pump OFF
+ digitalWrite(RELAY_PIN, HIGH);
+ Serial.println("Pump OFF");
+ delay(2000);  // 2 seconds OFF
+}
+
+************
+Connections:
+************
+    1. Press the on/off button for keysight dc power supply and turn it ON
+    2. Press the +20v button and turn it ON
+    3. Connect COM of keysight dc power supply to COM of relay module
+        a. For the COM on dc power supply - Twist the knob to make it loose and insert the wire, then tighten it again
+        b. For the COM on relay module, it is in the middle of the 3 connection points which have chinese characters
+    4. Connect + (positive) of peristaltic pump to +20V of the keysight dc power supply
+        a. Positive terminal of the pump will be marked in pink/red color.
+        b. For the +20V on dc power supply - Twist the knob to make it loose and insert the wire, then tighten it again
+    5. Connect - (negative) of peristaltic pump to NO (normally open) on relay module
+        a. For the NO (normally open) on relay module, it is on right side of the 3 connection points which have chinese characters (same side as green led)
+    6. Don’t connect any wire to the left side of the 3 connection points which have chinese characters
+    7. Connect the VCC of Relay module to 3V3 of the ESP32
+    8. Connect the GND of Relay module to GND of the ESP32
+    9. Connect the IN of Relay module to D5 of the ESP32
+
+*****************
+Reference Videos:
+*****************
+https://www.youtube.com/watch?v=KRDgay5uSmw
+https://www.youtube.com/watch?v=To3DKP99-1U
+https://youtu.be/5v3hguC41Kk?si=Q_hlo42c7lQe9DTg
+
+******************************
+Old versions - Now Superseded
+******************************
+Relay Module Code
+#define relay1 5
+void setup() {
+ pinMode(relay1,OUTPUT);
+}
+
+void loop() {
+ digitalWrite(relay1,LOW);
+ delay(1000);
+ digitalWrite(relay1,HIGH);
+ delay(1000);
+}
+Relay Module Connections
+Relay - ESP32
+VCC - 3V3
+GND - GND
+IN - D5 
+
+
