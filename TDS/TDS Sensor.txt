@@ -1,0 +1,175 @@
+----------
+TDS Sensor
+----------
+
+*****
+Code:
+*****
+#define TdsSensorPin 27 // Connect to ADC pin (GPIO34)
+#define VREF 3.3         // ESP32 reference voltage
+#define SCOUNT 30        // Number of samples for averaging
+
+int analogBuffer[SCOUNT]; // Store ADC values
+int analogBufferTemp[SCOUNT];
+int analogBufferIndex = 0;
+float averageVoltage = 0, tdsValue = 0, temperature = 25; // Default temp 25°C
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(TdsSensorPin, INPUT);
+}
+
+void loop() {
+  static unsigned long analogSampleTimepoint = millis();
+  
+  // Read sensor data every 40ms
+  if (millis() - analogSampleTimepoint > 40) {
+    analogSampleTimepoint = millis();
+    analogBuffer[analogBufferIndex] = analogRead(TdsSensorPin);
+   // Serial.println(analogBuffer[analogBufferIndex]);
+    analogBufferIndex++;
+    if (analogBufferIndex == SCOUNT) {
+      analogBufferIndex = 0;
+    }
+  }
+
+  static unsigned long printTimepoint = millis();
+  if (millis() - printTimepoint > 1000) {  // Print data every 1 sec
+    printTimepoint = millis();
+
+    for (int i = 0; i < SCOUNT; i++) {
+      analogBufferTemp[i] = analogBuffer[i];
+    }
+    averageVoltage = getMedian(analogBufferTemp, SCOUNT) * VREF / 4095.0; // Convert ADC to voltage
+
+    // TDS calculation
+    float compensationCoefficient = 1.0 + 0.02 * (temperature - 25.0); // Temperature compensation
+    float compensationVoltage = averageVoltage / compensationCoefficient;
+    tdsValue = (133.42 * compensationVoltage * compensationVoltage * compensationVoltage - 
+                255.86 * compensationVoltage * compensationVoltage + 
+                857.39 * compensationVoltage) * 0.5; // Convert voltage to TDS
+
+    Serial.print("TDS Value: ");
+    Serial.print(tdsValue);
+    Serial.println(" ppm");
+  }
+  delay(1000);
+}
+
+// Function to get the median of sampled values
+int getMedian(int *bArray, int iFilterLen) {
+  int bTab[iFilterLen];
+  memcpy(bTab, bArray, iFilterLen * sizeof(int));
+  for (int i = 0; i < iFilterLen - 1; i++) {
+    for (int j = i + 1; j < iFilterLen; j++) {
+      if (bTab[i] > bTab[j]) {
+        int temp = bTab[i];
+        bTab[i] = bTab[j];
+        bTab[j] = temp;
+      }
+    }
+  }
+  return (iFilterLen & 1) ? bTab[iFilterLen / 2] : (bTab[iFilterLen / 2] + bTab[iFilterLen / 2 - 1]) / 2;
+}
+
+************
+Connections:
+************
+    1. Connect the positive (+) of tds sensor to the VCC of ESP32
+    2. Connect the negative (-) of tds sensor to the GND of ESP32
+    3. Connect the A of tds sensor to the pin 27 of ESP32
+
+**********************
+Sensor Specifications:
+**********************
+https://ebhoot.in/shop-2/sensors/water-moisture-sensors/analog-tds-sensor-module-for-arduino-and-microcontroller/
+https://ebhoot.in/shop-2/sensors/water-moisture-sensors/analog-tds-sensor-module-for-arduino-and-microcontroller/
+
+
+******************************
+Old versions - Now Superseded
+******************************
+TDS+OLED CODE
+#include <U8g2lib.h>
+#include <Wire.h>
+
+#define TdsSensorPin 27
+#define VREF 3.3    	 
+#define SCOUNT 30
+
+U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+
+int analogBuffer[SCOUNT];
+int analogBufferTemp[SCOUNT];
+int analogBufferIndex = 0;
+float averageVoltage = 0, tdsValue = 0, temperature = 25;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(TdsSensorPin, INPUT);
+ 
+  u8g2.begin();
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB08_tr);
+  u8g2.drawStr(10, 20, "TDS Sensor Ready");
+  u8g2.sendBuffer();
+  delay(2000);
+}
+
+void loop() {
+  static unsigned long analogSampleTimepoint = millis();
+ 
+  if (millis() - analogSampleTimepoint > 40) {
+	analogSampleTimepoint = millis();
+	analogBuffer[analogBufferIndex] = analogRead(TdsSensorPin);
+	analogBufferIndex++;
+	if (analogBufferIndex == SCOUNT) {
+  	analogBufferIndex = 0;
+	}
+  }
+
+  static unsigned long printTimepoint = millis();
+  if (millis() - printTimepoint > 1000) {
+	printTimepoint = millis();
+    
+	for (int i = 0; i < SCOUNT; i++) {
+  	analogBufferTemp[i] = analogBuffer[i];
+	}
+	averageVoltage = getMedian(analogBufferTemp, SCOUNT) * VREF / 4095.0;
+
+	float compensationCoefficient = 1.0 + 0.02 * (temperature - 25.0);
+	float compensationVoltage = averageVoltage / compensationCoefficient;
+	tdsValue = (133.42 * compensationVoltage * compensationVoltage * compensationVoltage -
+            	255.86 * compensationVoltage * compensationVoltage +
+            	857.39 * compensationVoltage) * 0.5;
+    
+	Serial.print("TDS Value: ");
+	Serial.print(tdsValue);
+	Serial.println(" ppm");
+    
+	// Display TDS value on OLED
+	u8g2.clearBuffer();
+	u8g2.setFont(u8g2_font_ncenB08_tr);
+	u8g2.drawStr(10, 20, "TDS Value:");
+	char tdsStr[10];
+	sprintf(tdsStr, "%.2f ppm", tdsValue);
+	u8g2.drawStr(10, 40, tdsStr);
+	u8g2.sendBuffer();
+  }
+  delay(1000);
+}
+
+int getMedian(int *bArray, int iFilterLen) {
+  int bTab[iFilterLen];
+  memcpy(bTab, bArray, iFilterLen * sizeof(int));
+  for (int i = 0; i < iFilterLen - 1; i++) {
+	for (int j = i + 1; j < iFilterLen; j++) {
+  	if (bTab[i] > bTab[j]) {
+    	int temp = bTab[i];
+    	bTab[i] = bTab[j];
+    	bTab[j] = temp;
+  	}
+	}
+  }
+  return (iFilterLen & 1) ? bTab[iFilterLen / 2] : (bTab[iFilterLen / 2] + bTab[iFilterLen / 2 - 1]) / 2;
+}
