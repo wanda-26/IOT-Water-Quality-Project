@@ -1,4 +1,30 @@
-***************
-Specifications:
-***************
+------------------
+Turbidity Sensor
+------------------
+
+**********************
+Sensor Specifications:
+**********************
 Turbidity Sensor Module for Water Quality Test TS-300B
+https://probots.co.in/ts-300b-turbidity-sensor-module-mixed-water-detection-module-water-quality-test-turbidity-transducer-dc-5v.html
+
+*****
+Code:
+*****
+
+
+************
+Connections:
+************
+    1. 
+    2. 
+    3. 
+    4. 
+
+************
+Calibration:
+************
+
+******************************
+Old versions - Now Superseded
+******************************

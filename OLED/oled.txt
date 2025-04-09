@@ -1,0 +1,37 @@
+-------------
+OLED Display:
+-------------
+
+***********************
+Display Specifications:
+***********************
+0.96″ OLED Display Module – SPI/I2C – 128×64 – 7 Pin (Blue)
+Resolution: 64x120 pixels
+https://robu.in/product/0-96-oled-display-module/
+
+************
+Connections:
+************
+1. Connect the GND of OLED Display to GND of ESP32
+2. Connect the VCC of OLED Display to VCC of ESP32
+3. Connect the SDA of OLED Display to Pin 21 of ESP32
+4. Connect the SCL of OLED Display to Pin 22 of ESP32
+
+*****
+Code:
+*****
+#include <U8g2lib.h>
+#include <Wire.h>
+// Initialize the display (check I2C address)
+// U8G2_SSD1306_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+void setup() {
+  u8g2.begin();
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB08_tr); // Choose a font
+  u8g2.drawStr(2, 40, "Hello, ESP32!");
+  u8g2.sendBuffer(); // Send to display
+}
+void loop() {
+  // Nothing in loop
+}

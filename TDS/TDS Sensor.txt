@@ -2,6 +2,12 @@
 TDS Sensor
 ----------
 
+**********************
+Sensor Specifications:
+**********************
+https://ebhoot.in/shop-2/sensors/water-moisture-sensors/analog-tds-sensor-module-for-arduino-and-microcontroller/
+https://ebhoot.in/shop-2/sensors/water-moisture-sensors/analog-tds-sensor-module-for-arduino-and-microcontroller/
+
 *****
 Code:
 *****
@@ -79,12 +85,9 @@ Connections:
     2. Connect the negative (-) of tds sensor to the GND of ESP32
     3. Connect the A of tds sensor to the pin 27 of ESP32
 
-**********************
-Sensor Specifications:
-**********************
-https://ebhoot.in/shop-2/sensors/water-moisture-sensors/analog-tds-sensor-module-for-arduino-and-microcontroller/
-https://ebhoot.in/shop-2/sensors/water-moisture-sensors/analog-tds-sensor-module-for-arduino-and-microcontroller/
-
+************
+Calibration:
+************
 
 ******************************
 Old versions - Now Superseded

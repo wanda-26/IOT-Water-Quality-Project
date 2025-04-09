@@ -2,15 +2,20 @@
 PH sensor:
 ----------
 
+**********************
+Sensor Specifications:
+**********************
+??
+
 ************
 Connections:
 ************
-Common GND the circuit with GND Pin of ESP32.
-Connect the GND pin of 9v DC battery to common GND.(NOT SURE IF IT WORKS THAT WAY I HAVE ONLY TRIED WITH ROOM 117 POWER SUPPLY)
-Connect + of O/P pin to pin 36 of ESP32.
-Connect - of O/P pin to GND.
-Connect 9V+ pin to 9V DC battery pin.
-COnnect 9V- pin to common GND.
+1. Connect the Common GND of the circuit with GND Pin of ESP32.
+2. Connect the GND pin of 9v DC battery to common GND.(NOT SURE IF IT WORKS THAT WAY I HAVE ONLY TRIED WITH ROOM 117 POWER SUPPLY)
+3. Connect + (positive) of O/P pin to pin 36 of ESP32.
+4. Connect - (negative) of O/P pin to GND.
+5. Connect 9V+ pin to 9V DC battery pin.
+6. Connect 9V- pin to common GND.
 
 *****
 Code:
@@ -35,9 +40,15 @@ void setup() {
     Serial.println(ph);
     delay(1000);
  }
- 
- *************
- Calibration-
- *************
+
+***************** 
+Reference Videos:
+*****************
+https://www.electroniclinic.com/ph-sensor-with-arduino-ph-sensor-calibration-ph-meter-ph-value-of-liquids/
+https://www.youtube.com/watch?v=nsqEcekJ8-E
+
+************
+Calibration:
+************
  NOT DONE YET.
  

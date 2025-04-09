@@ -1,0 +1,33 @@
+----------
+VOC Sensor
+----------
+
+**********************
+Sensor Specifications:
+**********************
+SGP30
+MOX Gas Sensor
+TVOC and eCO2
+12C address 0x58
+https://botland.store/gas-sensors/19000-gas-sensor-sgp30-vzo-eco2-stemma-qt-qwiic-adafruit-3709-5904422366254.html
+
+*****
+Code:
+*****
+
+
+************
+Connections:
+************
+    1. 
+    2. 
+    3. 
+    4. 
+
+************
+Calibration:
+************
+
+******************************
+Old versions - Now Superseded
+******************************

@@ -1,0 +1,237 @@
+------------------
+Temperature Sensor
+------------------
+
+**********************
+Sensor Specifications:
+**********************
+DS18B20 temperature sensor
+https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf
+https://randomnerdtutorials.com/esp32-ds18b20-temperature-arduino-ide/
+
+*****
+Code:
+*****
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// Data wire is connected to digital pin 4
+#define ONE_WIRE_BUS 4
+
+// Setup a oneWire instance to communicate with any OneWire devices
+OneWire oneWire(ONE_WIRE_BUS);
+
+// Pass our oneWire reference to Dallas Temperature sensor 
+DallasTemperature sensors(&oneWire);
+
+// Variable to hold device addresses
+DeviceAddress insideThermometer;
+
+void setup() {
+  // Start serial communication for debugging
+  Serial.begin(115200);
+  Serial.println("DS18B20 Temperature Sensor Test");
+
+  // Start up the library
+  sensors.begin();
+  
+  // Locate devices on the bus
+  Serial.print("Locating devices...");
+  Serial.print("Found ");
+  Serial.print(sensors.getDeviceCount(), DEC);
+  Serial.println(" devices.");
+
+  // Report parasite power requirements
+  Serial.print("Parasite power is: "); 
+  if (sensors.isParasitePowerMode()) Serial.println("ON");
+  else Serial.println("OFF");
+  
+  // Search for devices on the bus and assign addresses
+  if (!sensors.getAddress(insideThermometer, 0)) {
+    Serial.println("Unable to find address for Device 0");
+    Serial.println("Check connections and pull-up resistor!");
+  } else {
+    Serial.print("Device 0 Address: ");
+    printAddress(insideThermometer);
+    Serial.println();
+  }
+
+  // Set the resolution to 9-12 bits (lower is faster)
+  sensors.setResolution(insideThermometer, 12);
+  Serial.print("Device 0 Resolution: ");
+  Serial.print(sensors.getResolution(insideThermometer), DEC); 
+  Serial.println();
+}
+
+// Function to print a device address
+void printAddress(DeviceAddress deviceAddress) {
+  for (uint8_t i = 0; i < 8; i++) {
+    if (deviceAddress[i] < 16) Serial.print("0");
+    Serial.print(deviceAddress[i], HEX);
+  }
+}
+
+void loop() {
+  // Call sensors.requestTemperatures() to issue a global temperature request
+  Serial.print("Requesting temperatures...");
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  Serial.println("DONE");
+  
+  // Get temperature for the first device
+  float tempC = sensors.getTempC(insideThermometer);
+  
+  // Check if reading was successful
+  if(tempC == DEVICE_DISCONNECTED_C) {
+    Serial.println("Error: Could not read temperature data, check connections!");
+    delay(1000);
+    return;
+  }
+  
+  if(tempC == -127.00) {
+    Serial.println("Error: Sensor returned -127.00°C, indicates communication problem!");
+    Serial.println("Troubleshooting steps:");
+    Serial.println("1. Check all wiring connections");
+    Serial.println("2. Verify 4.7K pull-up resistor is installed");
+    Serial.println("3. Try power cycling the sensor");
+    delay(1000);
+    return;
+  }
+  
+  // Print the temperature
+  Serial.print("Temperature: ");
+  Serial.print(tempC);
+  Serial.print("°C | ");
+  Serial.print(DallasTemperature::toFahrenheit(tempC));
+  Serial.println("°F");
+  
+  delay(2000); // Wait 2 seconds before next reading
+}
+
+************
+Connections:
+************
+    1. Connect the red wire of temperature sensor to the VCC of ESP32
+    2. Connect the black wire of temperature sensor to the GND of ESP32
+    3. Connect the yellow wire of temperature sensor to pin 4 of ESP32
+    4. Ensure there is a register connecting the yellow wire of temperature sensor and VCC of ESP32
+
+************
+Calibration:
+************
+
+******************************
+Old versions - Now Superseded
+******************************
+#include <OneWire.h>
+#include <DallasTemperature.h>
+// Data wire is connected to digital pin 4
+#define ONE_WIRE_BUS 4
+// Setup a oneWire instance to communicate with any OneWire devices
+OneWire oneWire(ONE_WIRE_BUS);
+// Pass our oneWire reference to Dallas Temperature sensor
+DallasTemperature sensors(&oneWire);
+// Variable to hold device addresses
+DeviceAddress insideThermometer;
+// Calibration points
+// Known reference points: ice water should be 0°C and boiling water should be 100°C
+const float MEASURED_ICE = 0.62;    // What your sensor reads in ice water
+const float MEASURED_BOILING = 85.0; // What your sensor reads in boiling water
+const float ACTUAL_ICE = 0.0;       // True temperature of ice water
+const float ACTUAL_BOILING = 100.0; // True temperature of boiling water at sea level
+void setup() {
+ // Start serial communication for debugging
+ Serial.begin(115200);
+ Serial.println("DS18B20 Temperature Sensor Test with Calibration");
+  // Start up the library
+ sensors.begin();
+ // Locate devices on the bus
+ Serial.print("Locating devices...");
+ Serial.print("Found ");
+ Serial.print(sensors.getDeviceCount(), DEC);
+ Serial.println(" devices.");
+  // Report parasite power requirements
+ Serial.print("Parasite power is: ");
+  if (sensors.isParasitePowerMode()) Serial.println("ON");
+ else Serial.println("OFF");
+  
+ // Search for devices on the bus and assign addresses
+ if (!sensors.getAddress(insideThermometer, 0)) {
+   Serial.println("Unable to find address for Device 0");
+   Serial.println("Check connections and pull-up resistor!");
+ } else {
+   Serial.print("Device 0 Address: ");
+   printAddress(insideThermometer);
+   Serial.println();
+ }
+  // Set the resolution to 9-12 bits (lower is faster)
+ sensors.setResolution(insideThermometer, 12);
+ Serial.print("Device 0 Resolution: ");
+ Serial.print(sensors.getResolution(insideThermometer), DEC);
+  Serial.println();
+  // Print calibration information
+ Serial.println("Calibration information:");
+ Serial.print("Measured ice: ");
+ Serial.print(MEASURED_ICE);
+ Serial.print("°C, Actual ice: ");
+ Serial.print(ACTUAL_ICE);
+ Serial.println("°C");
+  Serial.print("Measured boiling: ");
+ Serial.print(MEASURED_BOILING);
+ Serial.print("°C, Actual boiling: ");
+ Serial.print(ACTUAL_BOILING);
+ Serial.println("°C");
+}
+// Function to print a device address
+void printAddress(DeviceAddress deviceAddress) {
+ for (uint8_t i = 0; i < 8; i++) {
+   if (deviceAddress[i] < 16) Serial.print("0");
+   Serial.print(deviceAddress[i], HEX);
+ }
+}
+// Function to calibrate temperature reading
+float calibrateTemperature(float rawTemp) {
+ // Apply two-point calibration formula:
+ // corrected = actual_ice + (actual_boiling - actual_ice) * (measured - measured_ice) / (measured_boiling - measured_ice)
+ float calibratedTemp = ACTUAL_ICE +
+                       ((ACTUAL_BOILING - ACTUAL_ICE) * (rawTemp - MEASURED_ICE)) /
+                       (MEASURED_BOILING - MEASURED_ICE);
+                      
+ return calibratedTemp;
+}
+void loop() {
+ // Call sensors.requestTemperatures() to issue a global temperature request
+ Serial.print("Requesting temperatures...");
+ sensors.requestTemperatures(); // Send the command to get temperatures
+ Serial.println("DONE");
+ // Get temperature for the first device
+ float rawTempC = sensors.getTempC(insideThermometer);
+ // Check if reading was successful
+ if(rawTempC == DEVICE_DISCONNECTED_C) {
+   Serial.println("Error: Could not read temperature data, check connections!");
+   delay(1000);
+   return;
+ }
+ if(rawTempC == -127.00) {
+   Serial.println("Error: Sensor returned -127.00°C, indicates communication problem!");
+   Serial.println("Troubleshooting steps:");
+   Serial.println("1. Check all wiring connections");
+   Serial.println("2. Verify 4.7K pull-up resistor is installed");
+   Serial.println("3. Try power cycling the sensor");
+   delay(1000);
+   return;
+ }
+ // Calibrate the raw temperature reading
+ float calibratedTempC = calibrateTemperature(rawTempC);
+  // Print the raw and calibrated temperatures
+ Serial.print("Raw Temperature: ");
+ Serial.print(rawTempC);
+ Serial.print("°C | ");
+ Serial.print(DallasTemperature::toFahrenheit(rawTempC));
+ Serial.println("°F");
+  Serial.print("Calibrated Temperature: ");
+ Serial.print(calibratedTempC);
+ Serial.print("°C | ");
+ Serial.print(DallasTemperature::toFahrenheit(calibratedTempC));
+ Serial.println("°F");
+ delay(2000); // Wait 2 seconds before next reading
+}

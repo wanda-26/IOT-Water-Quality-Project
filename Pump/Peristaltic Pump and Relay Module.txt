@@ -2,6 +2,10 @@
 Peristaltic Pump and Relay Module
 ----------------------------------
 
+**********************
+Sensor Specifications:
+**********************
+
 *****
 Code:
 *****
@@ -45,6 +49,10 @@ Reference Videos:
 https://www.youtube.com/watch?v=KRDgay5uSmw
 https://www.youtube.com/watch?v=To3DKP99-1U
 https://youtu.be/5v3hguC41Kk?si=Q_hlo42c7lQe9DTg
+
+************
+Calibration:
+************
 
 ******************************
 Old versions - Now Superseded
